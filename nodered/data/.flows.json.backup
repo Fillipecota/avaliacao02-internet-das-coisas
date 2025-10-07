@@ -1,0 +1,384 @@
+[
+    {
+        "id": "59b9068c8ddeeeda",
+        "type": "tab",
+        "label": "Fluxo 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "3862fe521e6d3bdb",
+        "type": "mqtt-broker",
+        "name": "Broker",
+        "broker": "mosquitto",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "54b202318353a9b1",
+        "type": "mongodb4-client",
+        "name": "ConectionMongoDB",
+        "protocol": "mongodb",
+        "hostname": "mongo",
+        "port": "27017",
+        "dbName": "list_temp",
+        "appName": "",
+        "authSource": "",
+        "authMechanism": "DEFAULT",
+        "tls": false,
+        "tlsCAFile": "",
+        "tlsCertificateKeyFile": "",
+        "tlsInsecure": false,
+        "connectTimeoutMS": "30000",
+        "socketTimeoutMS": "0",
+        "minPoolSize": "0",
+        "maxPoolSize": "100",
+        "maxIdleTimeMS": "0",
+        "uri": "",
+        "advanced": "{}",
+        "uriTabActive": "tab-uri-simple"
+    },
+    {
+        "id": "a0109c7b76a3bea4",
+        "type": "postgreSQLConfig",
+        "name": "",
+        "host": "127.0.0.1",
+        "hostFieldType": "str",
+        "port": 5432,
+        "portFieldType": "num",
+        "database": "postgres",
+        "databaseFieldType": "str",
+        "ssl": "true",
+        "sslFieldType": "bool",
+        "applicationName": "",
+        "applicationNameType": "str",
+        "max": 10,
+        "maxFieldType": "num",
+        "idle": 1000,
+        "idleFieldType": "num",
+        "connectionTimeout": 10000,
+        "connectionTimeoutFieldType": "num",
+        "user": "",
+        "userFieldType": "str",
+        "password": "",
+        "passwordFieldType": "str"
+    },
+    {
+        "id": "6e47e8f7fde16d6e",
+        "type": "postgreSQLConfig",
+        "name": "",
+        "host": "127.0.0.1",
+        "hostFieldType": "str",
+        "port": 5432,
+        "portFieldType": "num",
+        "database": "postgres",
+        "databaseFieldType": "str",
+        "ssl": "true",
+        "sslFieldType": "bool",
+        "applicationName": "",
+        "applicationNameType": "str",
+        "max": 10,
+        "maxFieldType": "num",
+        "idle": 1000,
+        "idleFieldType": "num",
+        "connectionTimeout": 10000,
+        "connectionTimeoutFieldType": "num",
+        "user": "admin",
+        "userFieldType": "str",
+        "password": "admin",
+        "passwordFieldType": "str"
+    },
+    {
+        "id": "34c0ebd8316fce53",
+        "type": "websocket-listener",
+        "path": "/ws/devices",
+        "wholemsg": "false"
+    },
+    {
+        "id": "26482da9119b9e72",
+        "type": "mqtt in",
+        "z": "59b9068c8ddeeeda",
+        "name": "Device",
+        "topic": "device/+/info",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "3862fe521e6d3bdb",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 270,
+        "y": 260,
+        "wires": [
+            [
+                "171096679bb9ea5d",
+                "eb4106b15f8ba6ab"
+            ]
+        ]
+    },
+    {
+        "id": "200903553d4e8cf8",
+        "type": "function",
+        "z": "59b9068c8ddeeeda",
+        "name": "insert info",
+        "func": "const deviceId = msg.payload.device_id;\nif (!deviceId) return null;\n\nmsg.collection = \"devices\";\nmsg.operation = \"updateOne\";\n\nconst update = {\n    $set: {\n        _id: msg.payload._id,\n        device_id: deviceId,\n        model: msg.payload.model || null,\n        firmware: msg.payload.firmware || null,\n        ip_address: msg.payload.ip_address || null,\n        location: msg.payload.location || null,\n        update_at: new Date(),\n        light: msg.payload.on,\n        data: {\n            temperature: 5.0,\n            unit: \"ºC\"\n        },\n        status: {\n            last_info_ts: new Date(),\n        },\n        raw: JSON.stringify(msg.payload)\n    }\n}\n\nmsg.payload = [{ device_id: deviceId }, update];\n\nmsg._wsEvent = {\n    id: deviceId,\n    data: msg.payload,\n    retain: msg.retain\n}\n\nreturn msg;\n\n\n\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 680,
+        "y": 260,
+        "wires": [
+            [
+                "baaa713e0591fda0"
+            ]
+        ]
+    },
+    {
+        "id": "73b03a50da27cd15",
+        "type": "postgresql",
+        "z": "59b9068c8ddeeeda",
+        "name": "led_falid",
+        "query": "SELECT * FROM ;",
+        "postgreSQLConfig": "6e47e8f7fde16d6e",
+        "split": false,
+        "rowsPerMsg": 1,
+        "outputs": 1,
+        "x": 1200,
+        "y": 480,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "baaa713e0591fda0",
+        "type": "mongodb4",
+        "z": "59b9068c8ddeeeda",
+        "clientNode": "54b202318353a9b1",
+        "mode": "collection",
+        "collection": "",
+        "operation": "",
+        "output": "toArray",
+        "maxTimeMS": "0",
+        "handleDocId": false,
+        "name": "device",
+        "x": 870,
+        "y": 260,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "171096679bb9ea5d",
+        "type": "uuid",
+        "z": "59b9068c8ddeeeda",
+        "uuidVersion": "v4",
+        "namespaceType": "",
+        "namespace": "",
+        "namespaceCustom": "",
+        "name": "",
+        "field": "payload._id",
+        "fieldType": "msg",
+        "x": 450,
+        "y": 260,
+        "wires": [
+            [
+                "200903553d4e8cf8"
+            ]
+        ]
+    },
+    {
+        "id": "eb4106b15f8ba6ab",
+        "type": "debug",
+        "z": "59b9068c8ddeeeda",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 460,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "add2237f79a08d4f",
+        "type": "mqtt in",
+        "z": "59b9068c8ddeeeda",
+        "name": "DeviceTemp",
+        "topic": "device/+/temp",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "3862fe521e6d3bdb",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 290,
+        "y": 360,
+        "wires": [
+            [
+                "6e6f8cfa8eb5317a"
+            ]
+        ]
+    },
+    {
+        "id": "6e6f8cfa8eb5317a",
+        "type": "uuid",
+        "z": "59b9068c8ddeeeda",
+        "uuidVersion": "v4",
+        "namespaceType": "",
+        "namespace": "",
+        "namespaceCustom": "",
+        "name": "",
+        "field": "payload._id",
+        "fieldType": "msg",
+        "x": 470,
+        "y": 360,
+        "wires": [
+            [
+                "9a40c75fc5c91148"
+            ]
+        ]
+    },
+    {
+        "id": "9a40c75fc5c91148",
+        "type": "function",
+        "z": "59b9068c8ddeeeda",
+        "name": "Temperatura",
+        "func": "const retain = !!msg.retain;\n\nconst obj = {\n    _id: msg.payload._id,\n    device_id: msg.payload._id,\n    temperature: msg.payload.temperature || 'unknown',\n    unit: msg.payload.unit || null,\n     led: \"off\",\n    created_at: new Date(msg.payload.ts || Date.now()),\n}\n\nreturn temperatura;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 650,
+        "y": 360,
+        "wires": [
+            [
+                "cc3e210f3f66ce45"
+            ]
+        ]
+    },
+    {
+        "id": "70f918524acee5f2",
+        "type": "mongodb4",
+        "z": "59b9068c8ddeeeda",
+        "clientNode": "54b202318353a9b1",
+        "mode": "collection",
+        "collection": "",
+        "operation": "",
+        "output": "toArray",
+        "maxTimeMS": "0",
+        "handleDocId": false,
+        "name": "Temp",
+        "x": 1230,
+        "y": 260,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "cc3e210f3f66ce45",
+        "type": "switch",
+        "z": "59b9068c8ddeeeda",
+        "name": "alert",
+        "property": "payload",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "lte",
+                "v": "5",
+                "vt": "num"
+            },
+            {
+                "t": "gte",
+                "v": "5",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 830,
+        "y": 360,
+        "wires": [
+            [
+                "80494b9bcdde236f"
+            ],
+            [
+                "7f317836e4ede671"
+            ]
+        ]
+    },
+    {
+        "id": "80494b9bcdde236f",
+        "type": "function",
+        "z": "59b9068c8ddeeeda",
+        "name": "function 1",
+        "func": "\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1040,
+        "y": 300,
+        "wires": [
+            [
+                "70f918524acee5f2"
+            ]
+        ]
+    },
+    {
+        "id": "7f317836e4ede671",
+        "type": "function",
+        "z": "59b9068c8ddeeeda",
+        "name": "function 2",
+        "func": "const retain = !!msg.retain;\n\nconst obj = {\n    _id: msg.payload._id,\n    device_id: msg.payload._id,\n    temperature: msg.payload.temperature || 'unknown',\n    unit: msg.payload.unit || null,\n     led: \"on\",\n    created_at: new Date(msg.payload.ts || Date.now()),\n}\n\nconst error ={\n    led: msg.payload.led\n}\nreturn erro;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1020,
+        "y": 480,
+        "wires": [
+            [
+                "73b03a50da27cd15"
+            ]
+        ]
+    }
+]

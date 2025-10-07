@@ -403,8 +403,8 @@
         "targetType": "full",
         "statusVal": "",
         "statusType": "auto",
-        "x": 360,
-        "y": 660,
+        "x": 340,
+        "y": 520,
         "wires": []
     },
     {
